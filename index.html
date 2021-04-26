@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.1.1/dist/base.css">
+</head>
+
+<body>
+
+    <div id="elm"></div>
+
+    <script src="elm.js"></script>
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.min.js"></script>
+    <script src="https://unpkg.com/d3-graphviz@3.0.5/build/d3-graphviz.js"></script>
+
+    <script>
+
+        var app = Elm.Main.init({
+            node: document.getElementById('elm')
+        });
+
+        var graphviz = undefined;
+
+        function transitionFactory() {
+            return d3.transition()
+                .ease(d3.easeQuad)
+                .duration(1000);
+        }
+
+        app.ports.graphvizInit.subscribe(dot => {
+            requestAnimationFrame(() => {
+                graphviz = d3.select('#graphviz').graphviz()
+                    .zoom(false);
+                // console.log(dot);
+                graphviz.renderDot(dot);
+            });
+        });
+
+        app.ports.graphvizUpdate.subscribe(() => {
+            requestAnimationFrame(() => {
+                graphviz.transition(transitionFactory);
+                var dot = document.getElementById('graphviz').dataset.dot;
+                // console.log(dot);
+                graphviz.renderDot(dot);
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>
